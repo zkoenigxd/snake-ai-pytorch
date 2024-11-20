@@ -71,7 +71,7 @@ class SnakeGameAI:
     # returns: 
     # reward - A numerical Reward value for the current step
     # game_over - a bool 
-    def play_step(self, action, episode):
+    def play_step(self, action):
         self.frame_iteration += 1
         # 1. collect user input
         for event in pygame.event.get():
@@ -86,7 +86,7 @@ class SnakeGameAI:
         # 3. check if game over
         reward = 0
         game_over = False
-        if self.is_collision() or self.frame_iteration > 100*(len(self.snake)**.5): # hit something or has taken too many time steps to find food
+        if self.is_collision() or self.frame_iteration > 100*len(self.snake): # hit something or has taken too many time steps to find food
             game_over = True
             reward = -20
             return reward, game_over, self.score
@@ -101,8 +101,7 @@ class SnakeGameAI:
             self.snake.pop()
         
         # 5. update ui and clock
-        if episode % 50 == 0:
-            self._update_ui()
+        self._update_ui()
         self.clock.tick(SPEED)
         # 6. return game over and score
         return reward, game_over, self.score
