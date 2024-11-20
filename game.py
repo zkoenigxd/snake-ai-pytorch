@@ -60,7 +60,17 @@ class SnakeGameAI:
         if self.food in self.snake:
             self._place_food()
 
+    
+    def _normalized_distance_to_food(self):
+        dist = ((self.food.x - self.head.x)**2 + (self.food.y - self.head.y)**2)**.5
+        norm_dist = dist / ((self.w + self.h)/2) - 1
+        return norm_dist
 
+
+    #Advance game by one step
+    # returns: 
+    # reward - A numerical Reward value for the current step
+    # game_over - a bool 
     def play_step(self, action):
         self.frame_iteration += 1
         # 1. collect user input
@@ -76,17 +86,18 @@ class SnakeGameAI:
         # 3. check if game over
         reward = 0
         game_over = False
-        if self.is_collision() or self.frame_iteration > 100*len(self.snake):
+        if self.is_collision() or self.frame_iteration > 100*len(self.snake): # hit something or has taken too many time steps to find food
             game_over = True
-            reward = -10
+            reward = -20
             return reward, game_over, self.score
 
         # 4. place new food or just move
         if self.head == self.food:
             self.score += 1
-            reward = 10
+            reward = 20
             self._place_food()
         else:
+            reward = self._normalized_distance_to_food()
             self.snake.pop()
         
         # 5. update ui and clock
@@ -95,7 +106,7 @@ class SnakeGameAI:
         # 6. return game over and score
         return reward, game_over, self.score
 
-
+        
     def is_collision(self, pt=None):
         if pt is None:
             pt = self.head
